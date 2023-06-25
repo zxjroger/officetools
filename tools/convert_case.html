@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Convert Case</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    window.onload = function() {
+      // Get the HTML elements
+      const textarea = document.getElementById('text-area');
+      const sentenceCaseBtn = document.getElementById('sentence-case-btn');
+      const lowercaseBtn = document.getElementById('lowercase-btn');
+      const uppercaseBtn = document.getElementById('uppercase-btn');
+      const capitalizedCaseBtn = document.getElementById('capitalized-case-btn');
+      const titleCaseBtn = document.getElementById('title-case-btn');
+
+      // Add event listeners to the buttons
+      sentenceCaseBtn.addEventListener('click', convertToSentenceCase);
+      lowercaseBtn.addEventListener('click', convertToLowerCase);
+      uppercaseBtn.addEventListener('click', convertToUpperCase);
+      capitalizedCaseBtn.addEventListener('click', convertToCapitalizedCase);
+      titleCaseBtn.addEventListener('click', convertToTitleCase);
+
+      // Function to convert the text to sentence case
+      function convertToSentenceCase() {
+        textarea.value = textarea.value.toLowerCase();
+        textarea.value = textarea.value.charAt(0).toUpperCase() + textarea.value.slice(1);
+        copyToClipboard(textarea.value);
+      }
+
+      // Function to convert the text to lower case
+      function convertToLowerCase() {
+        textarea.value = textarea.value.toLowerCase();
+        copyToClipboard(textarea.value);
+      }
+
+      // Function to convert the text to upper case
+      function convertToUpperCase() {
+        textarea.value = textarea.value.toUpperCase();
+        copyToClipboard(textarea.value);
+      }
+
+      // Function to convert the text to capitalized case
+      function convertToCapitalizedCase() {
+        textarea.value = textarea.value.toLowerCase().replace(/(?:^|\s)\S/g, function (char) {
+          return char.toUpperCase();
+        });
+        copyToClipboard(textarea.value);
+      }
+
+	  // Function to convert the text to title case
+	  function convertToTitleCase() {
+		const textBox = textarea.value;
+		const splitStr = textBox.toLowerCase().split(" ");
+		const exceptions = ["and", "the", "a", "an", "for", "to", "but", "at", "by", "of", "on"];
+		const result = splitStr.map((word, index) => {
+			if (index === 0) {
+			  return word.charAt(0).toUpperCase() + word.substring(1);
+			} else {
+			  const formattedWord = exceptions.indexOf(word) == -1 ? word.charAt(0).toUpperCase() + word.substring(1) : word;
+			  return formattedWord;
+			}
+		});
+		textarea.value = result.join(" ");
+		copyToClipboard(textarea.value);
+	  }
+
+
+      // Function to copy the text to the clipboard
+      function copyToClipboard(text) {
+        const dummy = document.createElement("textarea");
+        document.body.appendChild(dummy);
+        dummy.value = text;
+        dummy.select();
+        document.execCommand("copy");
+        document.body.removeChild(dummy);
+      }
+    };
+  </script>
+</head>
+<body>
+	<label for="text-area">Paste text here:</label><br>
+	<textarea id="text-area" rows="10" cols="120" placeholder="Paste text here. Click a button below. The processed text is auto copied to your clipboard."></textarea>
+	<br>
+	<button id="sentence-case-btn">Sentence case</button>
+	<button id="lowercase-btn">lower case</button>
+	<button id="uppercase-btn">UPPER CASE</button>
+	<button id="capitalized-case-btn">Capitalized Case</button>
+	<button id="title-case-btn">Title Case</button>
+</body>
+</html>

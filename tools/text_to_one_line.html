@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Text to One Line</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <!-- Input section -->
+  <label for="input-text">Paste multi-line text:</label><br>
+  <textarea id="input-text" rows="12" cols="100" placeholder="Paste multi-line text here. The one-line text is auto copied to your clipboard." oninput="processText()"></textarea><br><br>
+
+  <!-- Replace option selection -->
+  <label for="replace-option">Choose a replace option:</label><br>
+  <select id="replace-option" onchange="processText()">
+    <option value="space">Replace with space</option>
+    <option value="nospace">Replace with no space</option>
+    <option value="comma">Replace with comma and space</option>
+    <option value="singlequotes">Replace with space (double to single quotes)</option>
+  </select><br><br>
+
+  <!-- Output section -->
+  <label for="output-text">One-line text:</label><br>
+  <textarea id="output-text" rows="12" cols="100" readonly></textarea>
+
+  <script>
+    function processText() {
+      // Get input and replace option values
+      const inputText = document.getElementById('input-text').value;
+      const replaceOption = document.getElementById('replace-option').value;
+      let outputText = '';
+
+      // Process the text based on the selected replace option
+      switch (replaceOption) {
+        case 'space':
+          // Replace line breaks with spaces and remove extra spaces
+          outputText = inputText.replace(/(\r\n|\n|\r)+/g, ' ');
+		  outputText = outputText.replace(/\s+/g, " ");
+          break;
+        case 'nospace':
+          // Remove line breaks
+          outputText = inputText.replace(/(\r\n|\n|\r)+/g, '');
+          break;
+        case 'comma':
+          // Replace line breaks with comma and space
+          outputText = inputText.replace(/(\r\n|\n|\r)+/g, ', ');
+          break;
+        case 'singlequotes':
+          // Replace line breaks with spaces and replace double quotes with single quotes
+          outputText = inputText.replace(/(\r\n|\n|\r)+/g, ' ');
+          outputText = outputText.replace(/(\u0022|\u201c|\u201d)/g, '\u0027');
+		  outputText = outputText.replace(/\s+/g, " ");
+          break;
+      }
+
+      // Replace straight quotes with curly quotes
+      outputText = outputText.replace(/(?<=[\w,.?!\)])\u0027/g, '\u2019');
+      outputText = outputText.replace(/\u0027/g, '\u2018');
+      outputText = outputText.replace(/(?<=[\w,.?!\)])\u0022/g, '\u201d');
+      outputText = outputText.replace(/\u0022/g, '\u201c');
+
+      // Update the output textarea and copy the text to clipboard
+      document.getElementById('output-text').value = outputText;
+      copyToClipboard(outputText);
+    }
+
+    // Function to copy text to clipboard
+    function copyToClipboard(text) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+    }
+  </script>
+</body>
+</html>
