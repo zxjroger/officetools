@@ -7,43 +7,45 @@
 <body>
   <!-- Input section -->
   <label for="input-text">Paste multi-line text:</label><br>
-  <textarea id="input-text" rows="12" cols="100" placeholder="Paste multi-line text here. The one-line text is auto copied to your clipboard." oninput="processText()"></textarea><br><br>
+  <textarea id="input-text" rows="12" cols="100" placeholder="The one-line text is automatically copied to your clipboard." oninput="processText()"></textarea><br><br>
 
   <!-- Replace option selection -->
-  <label for="replace-option">Join text with:</label>
+  <label for="replace-option">Join text with</label>
   <select id="replace-option" onchange="processText()">
     <option value="space">Space</option>
     <option value="nospace">No space</option>
     <option value="comma">Comma and space</option>
-  </select>&nbsp
+  </select>&nbsp&nbsp
 
-  <label for="quotes-option">Double to single quote:</label>
-  <select id="quotes-option" onchange="processText()">
-    <option value="no">No</option>
-    <option value="yes">Yes</option>
-  </select><br><br>
+  <!-- Double to single quotes option selection -->
+  <label for="quotes-option">Double to single quotes:</label>
+  <input type="checkbox" id="quotes-option" onchange="processText()">&nbsp&nbsp
+
+  <!-- Disable auto copy to clipboard and enable editing option -->
+  <label for="edit-mode">Edit mode (pause auto copy):</label>
+  <input type="checkbox" id="edit-mode" onchange="processText()"><br><br>
 
   <!-- Output section -->
   <label for="output-text">One-line text:</label><br>
-  <textarea id="output-text" rows="12" cols="100" readonly></textarea>
+  <textarea id="output-text" rows="12" cols="100"></textarea>
 
   <script>
     function processText() {
       // Get input and replace option values
       const inputText = document.getElementById('input-text').value;
       const replaceOption = document.getElementById('replace-option').value;
-      const quotesOption = document.getElementById('quotes-option').value;
+      const quotesOption = document.getElementById('quotes-option').checked;
+      const editMode = document.getElementById('edit-mode').checked;
       let outputText = '';
 
       // Process the text based on the selected replace option
       switch (replaceOption) {
         case 'space':
-          // Replace line breaks with spaces and remove extra spaces
+          // Replace line breaks with space
           outputText = inputText.replace(/(\r\n|\n|\r)+/g, ' ');
-          outputText = outputText.replace(/\s+/g, " ");
           break;
         case 'nospace':
-          // Remove line breaks
+          // Remove line breaks without space
           outputText = inputText.replace(/(\r\n|\n|\r)+/g, '');
           break;
         case 'comma':
@@ -52,9 +54,13 @@
           break;
       }
 
+      // Remove extra spaces
+      outputText = outputText.replace(/\s+/g, " ");
+      outputText = outputText.replace(/\s,/g, ',');
+
       // Replace double quotes with single quotes based on the selected replace option
-      if (quotesOption === "yes") {
-        outputText = outputText.replace(/(\u0022|\u201c|\u201d)/g, '\u0027')
+      if (quotesOption) {
+        outputText = outputText.replace(/(\u0022|\u201c|\u201d)/g, '\u0027');
       }
 
       // Replace straight quotes with curly quotes
@@ -65,7 +71,10 @@
 
       // Update the output textarea and copy the text to clipboard
       document.getElementById('output-text').value = outputText;
-      copyToClipboard(outputText);
+      // Copy the text to clipboard if the disableClipboardCopy option is not checked
+      if (!editMode) {
+        copyToClipboard(outputText);
+      }
     }
 
     // Function to copy text to clipboard
