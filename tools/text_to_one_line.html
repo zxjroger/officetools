@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Text to One Line</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
   <!-- Input section -->
@@ -10,12 +10,17 @@
   <textarea id="input-text" rows="12" cols="100" placeholder="Paste multi-line text here. The one-line text is auto copied to your clipboard." oninput="processText()"></textarea><br><br>
 
   <!-- Replace option selection -->
-  <label for="replace-option">Choose a replace option:</label><br>
+  <label for="replace-option">Join text with:</label>
   <select id="replace-option" onchange="processText()">
-    <option value="space">Replace with space</option>
-    <option value="nospace">Replace with no space</option>
-    <option value="comma">Replace with comma and space</option>
-    <option value="singlequotes">Replace with space (double to single quotes)</option>
+    <option value="space">Space</option>
+    <option value="nospace">No space</option>
+    <option value="comma">Comma and space</option>
+  </select>&nbsp
+
+  <label for="quotes-option">Double to single quote:</label>
+  <select id="quotes-option" onchange="processText()">
+    <option value="no">No</option>
+    <option value="yes">Yes</option>
   </select><br><br>
 
   <!-- Output section -->
@@ -27,6 +32,7 @@
       // Get input and replace option values
       const inputText = document.getElementById('input-text').value;
       const replaceOption = document.getElementById('replace-option').value;
+      const quotesOption = document.getElementById('quotes-option').value;
       let outputText = '';
 
       // Process the text based on the selected replace option
@@ -34,7 +40,7 @@
         case 'space':
           // Replace line breaks with spaces and remove extra spaces
           outputText = inputText.replace(/(\r\n|\n|\r)+/g, ' ');
-		  outputText = outputText.replace(/\s+/g, " ");
+          outputText = outputText.replace(/\s+/g, " ");
           break;
         case 'nospace':
           // Remove line breaks
@@ -44,12 +50,11 @@
           // Replace line breaks with comma and space
           outputText = inputText.replace(/(\r\n|\n|\r)+/g, ', ');
           break;
-        case 'singlequotes':
-          // Replace line breaks with spaces and replace double quotes with single quotes
-          outputText = inputText.replace(/(\r\n|\n|\r)+/g, ' ');
-          outputText = outputText.replace(/(\u0022|\u201c|\u201d)/g, '\u0027');
-		  outputText = outputText.replace(/\s+/g, " ");
-          break;
+      }
+
+      // Replace double quotes with single quotes based on the selected replace option
+      if (quotesOption === "yes") {
+        outputText = outputText.replace(/(\u0022|\u201c|\u201d)/g, '\u0027')
       }
 
       // Replace straight quotes with curly quotes
